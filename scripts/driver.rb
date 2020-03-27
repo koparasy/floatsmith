@@ -190,10 +190,26 @@ def run_driver
     # {{{ initialize paths
     if ARGV.include?("--root") then
         $FS_ROOT = File.absolute_path(ARGV[ARGV.find_index("--root")+1])
+        puts $FS_ROOT
     else
         $FS_ROOT  = File.absolute_path(input_path("Where do you want to " +
                         "save configuration and search files?", "./.floatsmith", false))
+        puts $FS_ROOT
     end
+
+    if ARGV.include?("--quality") then
+        $QUALITY = ARGV[ARGV.find_index("--quality")+1]
+        puts "Quality is :"  
+        puts $QUALITY
+    end
+
+    if ARGV.include?("--metric") then
+        $METRIC= ARGV[ARGV.find_index("--metric")+1]
+        puts "Quality is :"  
+        puts $METRIC
+    end
+
+        
     $FS_SANITY  = "#{$FS_ROOT}/sanity"
     $FS_BASE    = "#{$FS_ROOT}/baseline"
     $FS_INITIAL = "#{$FS_ROOT}/initial"
@@ -336,12 +352,8 @@ def run_driver
             exec_cmd($FS_ACQUIRE, false)
             exec_cmd($FS_BUILD, false)
             exec_cmd($FS_RUN, false)
-            script << "outdiff=$(diff stdout #{$FS_BASE}/stdout)"
-            script << "if [ -z \"$outdiff\" ]; then"
-            script << "    echo \"status:  pass\""
-            script << "else"
-            script << "    echo \"status:  fail\""
-            script << "fi"
+            script << "outdiff=\$(#{$QUALITY} #{$FS_BASE}/output output #{$METRIC} )"
+            script << "echo \$outdiff"
         when "b"
             if regex.nil? then
                 puts "Enter regex: "
@@ -701,7 +713,7 @@ def run_driver
 
         # print final output
         puts "Search results are located in #{$FS_SEARCH}"
-        puts "If found, the recommended configuration is located in #{$FS_SEARCH}/final"
+        puts "If found, the recommended configuration is located in :#{$FS_SEARCH}/final"
         puts ""
     end
     # }}}
