@@ -68,8 +68,19 @@ CFLAGS= CXXFLAGS='-std=c++11 -Wfatal-errors' "${ROSE_SOURCE}/configure" $config 
 time make -j${NUM_PROCESSORS} || make V=1 || exit 1
 time make install -j${NUM_PROCESSORS} || exit 1
 
-time make -j${NUM_PROCESSORS} -C projects/typeforge || exit 1
-time make install -C projects/typeforge || exit 1
+export PATH="${ROSE_INSTALL}/bin:${PATH}"
+export LD_LIBRARY_PATH="${ROSE_INSTALL}/bin:${LD_LIBRARY_PATH}"
+
+
+cd $PREFIX
+git clone https://github.com/LLNL/typeforge.git
+cd typeforge
+./build
+./configure --prefix={ROSE_INSTALL}
+time make -j${NUM_PROCESSORS} || make V=1 || exit 1
+time make install -j${NUM_PROCESSORS} || exit 1
+
+cd $PREFIX
 
 export PATH="${ROSE_INSTALL}/bin:${PATH}"
 export LD_LIBRARY_PATH="${ROSE_INSTALL}/bin:${LD_LIBRARY_PATH}"
