@@ -158,6 +158,7 @@ def run_driver
         puts "        combinational             try all combinations (very expensive!)"
         puts "        simple                    hierarchical readth-first search on program structure to find passing configurations"
         puts "        comp_simple               hierarchical + compositional"
+        puts "        ga                        genetic algorithm"
         puts " -t <number>                      run the specified number of trials per configuration during the CRAFT search [default=10]"
         puts " -T <number>                      timeout trials after <n> seconds [default=1.5x baseline runtime]"
         puts " -J slurm                         submit configuration runs as SLURM jobs [default=false]"
@@ -165,6 +166,7 @@ def run_driver
         puts "                                  (-j is generally not used with \"-J slurm\" because SLURM manages the queue)"
         puts " -g <tag>                         group variables by labels beginning with the given tag"
         puts " -M                               merge overlapping groups (no effect without \"-g\""
+        puts " --ga-num_generations             number of generations to execute GA algorithm"
         puts ""
         exit
     end # }}}
@@ -631,6 +633,7 @@ def run_driver
                 puts "  c) Combinational - try all combinations (very expensive!)"
                 puts "  d) Hierarchical - breadth-first search on program structure to find passing configurations"
                 puts "  e) Hierarchical + Compositional"
+                puts "  f) Genetic Algorithm"
             end
             opt = input_option("Which strategy do you wish to use for the search? ", "abcde", "a")
             cmd += " -s compositional" if opt == "a"
@@ -638,6 +641,7 @@ def run_driver
             cmd += " -s combinational" if opt == "c"
             cmd += " -s simple"        if opt == "d"
             cmd += " -s comp_simple"   if opt == "e"
+            cmd += " -s ga"            if opt == "f"
         end
         if ARGV.include?("-t") then
             cmd += " -t #{ARGV[ARGV.find_index("-t")+1]}"
@@ -647,6 +651,9 @@ def run_driver
         end
         if ARGV.include?("-T") then
             cmd += " -T #{ARGV[ARGV.find_index("-T")+1]}"
+        end
+        if ARGV.include?("--ga-num_generations") then
+          cmd += " --ga-num_generations #{ARGV[ARGV.find_index("--ga-num_generations")+1]}"
         end
         if ARGV.include?("-J") then
             cmd += " -J #{ARGV[ARGV.find_index("-J")+1]}"
