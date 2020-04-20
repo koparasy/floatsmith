@@ -606,10 +606,11 @@ def run_driver
         File.chmod(0700, "#{$FS_SEARCH}/craft_builder")
         File.open("#{$FS_SEARCH}/craft_driver", "w") do |f|
             f.puts "#!/usr/bin/env bash"
-            f.puts "t_start=$(date +%s.%3N)"
+#            f.puts "t_start=$(date +%s.%3N)"
             f.puts IO.read($FS_RUN)
-            f.puts "t_stop=$(date +%s.%3N)"
-            f.puts "echo \"time:    $(echo \"$t_stop - $t_start\" | bc)\""
+#            f.puts "t_stop=$(date +%s.%3N)"
+            f.puts "time_exec=$(cat stdout | grep \"RUN_TIME\" | cut -d ':' -f 2)"
+            f.puts "echo \"time:    ${time_exec}\""
             f.puts IO.read($FS_VERIFY)
             # TODO: handle 'error' output
         end
